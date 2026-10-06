@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "JbCxqNgi2+MJsBzSW6FUT+jFQa9ZFr+2NLBrayJkrAQ=",
+  "Source": "KidsCompanion.Api",
+  "BasePath": "_content/KidsCompanion.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
