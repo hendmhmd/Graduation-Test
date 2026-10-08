@@ -1,0 +1,35 @@
+name: Security Checks
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+      - "fix/**"
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan files and Git history
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/path" \
+            zricethezav/gitleaks:latest \
+            detect --source=/path --redact --verbose
