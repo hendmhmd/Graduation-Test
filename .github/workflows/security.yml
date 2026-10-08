@@ -17,6 +17,7 @@ permissions:
   contents: read
 
 jobs:
+
   secret-scan:
     name: Gitleaks Secret Scan
     runs-on: ubuntu-latest
@@ -33,3 +34,25 @@ jobs:
             -v "$GITHUB_WORKSPACE:/path" \
             zricethezav/gitleaks:latest \
             detect --source=/path --redact --verbose
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: csharp
+          build-mode: none
+
+      - name: Analyze code
+        uses: github/codeql-action/analyze@v4
