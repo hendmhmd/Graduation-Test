@@ -1,0 +1,17 @@
+version: 2
+
+updates:
+  - package-ecosystem: nuget
+    directory: "/src/KidsCompanion.Api"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: "/tests/KidsCompanion.Api.Tests"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
