@@ -56,3 +56,24 @@ jobs:
 
       - name: Analyze code
         uses: github/codeql-action/analyze@v4
+  dependency-scan:
+    name: NuGet Vulnerability Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Check API dependencies
+        run: dotnet list src/KidsCompanion.Api/KidsCompanion.Api.csproj package --vulnerable --include-transitive
+
+      - name: Check test dependencies
+        run: dotnet list tests/KidsCompanion.Api.Tests/KidsCompanion.Api.Tests.csproj package --vulnerable --include-transitive
