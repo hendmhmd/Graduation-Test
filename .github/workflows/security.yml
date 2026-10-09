@@ -56,3 +56,58 @@ jobs:
 
       - name: Analyze code
         uses: github/codeql-action/analyze@v4
+        
+  dependency-scan:
+    name: NuGet Vulnerability Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Check API dependencies
+        run: dotnet list src/KidsCompanion.Api/KidsCompanion.Api.csproj package --vulnerable --include-transitive
+
+      - name: Check test dependencies
+        run: dotnet list tests/KidsCompanion.Api.Tests/KidsCompanion.Api.Tests.csproj package --vulnerable --include-transitive
+
+        
+  trivy-image-scan:
+    name: Trivy Container Image Scan
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t kidscompanion-api:${{ github.sha }} .
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: kidscompanion-api:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          vuln-type: os,library
+          ignore-unfixed: true
+          exit-code: '0'
+
+      - name: Upload Trivy results to GitHub Security
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-results.sarif
